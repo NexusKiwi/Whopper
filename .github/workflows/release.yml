@@ -1,10 +1,10 @@
 name: Release (Drive-Thru)
 
-# Push a tag like v1.0.0 and GitHub builds whopper.exe and the Linux binary,
-# then attaches them to a Release on the repo page.
+# Every push to main builds whopper for Windows, Linux and macOS, then
+# publishes (or refreshes) the Release for the version in Cargo.toml.
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -46,14 +46,20 @@ jobs:
     name: Serve the order
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
     steps:
+      - uses: actions/checkout@v4
+      - name: Read version from Cargo.toml
+        id: ver
+        run: echo "version=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          name: whopper ${{ github.ref_name }}
+          tag_name: v${{ steps.ver.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: whopper v${{ steps.ver.outputs.version }}
+          make_latest: true
           body: |
             🍔 Fresh off the grill.
 
