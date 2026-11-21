@@ -1,0 +1,19 @@
+[package]
+name = "whopper"
+version = "1.0.0"
+edition = "2021"
+authors = ["NexusKiwi"]
+description = "A blazingly fast, memory-safe, zero-dependency flame-grilled burger assembly engine."
+license = "MIT"
+repository = "https://github.com/NexusKiwi/whopper"
+readme = "README.md"
+keywords = ["burger", "food", "flame-grilled", "cli", "enterprise"]
+categories = ["command-line-utilities", "food-service"]
+
+[dependencies]
+# Zero dependencies. Every pickle is hand-rolled.
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3   # maximum grill

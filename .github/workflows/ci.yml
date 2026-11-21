@@ -1,0 +1,26 @@
+name: CI (Continuous Integration of Ingredients)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  grill:
+    name: Flame-grill on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Check formatting (presentation matters)
+        run: cargo fmt --check
+      - name: Clippy (health inspection)
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Taste test
+        run: cargo test
+      - name: Assemble the classic
+        run: cargo run --release -- --fast --receipt
